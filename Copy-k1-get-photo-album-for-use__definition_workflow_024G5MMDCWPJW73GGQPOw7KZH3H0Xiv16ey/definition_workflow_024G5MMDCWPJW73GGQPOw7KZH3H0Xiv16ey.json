@@ -1,0 +1,241 @@
+{
+  "workflow": {
+    "unique_name": "definition_workflow_024G5MMDCWPJW73GGQPOw7KZH3H0Xiv16ey",
+    "name": "Copy(1)-k1- get photo album for user",
+    "title": "Copy(1)-k1- get photo album for user",
+    "type": "generic.workflow",
+    "base_type": "workflow",
+    "variables": [
+      {
+        "schema_id": "datatype.string",
+        "properties": {
+          "value": "",
+          "scope": "input",
+          "name": "username",
+          "type": "datatype.string",
+          "is_required": true,
+          "is_invisible": false
+        },
+        "unique_name": "variable_workflow_024G5MME1F4MS3hl9Dm9q5XKAxv4DWvkfiz",
+        "object_type": "variable_workflow"
+      },
+      {
+        "schema_id": "datatype.string",
+        "properties": {
+          "value": "",
+          "scope": "output",
+          "name": "albums retrieved",
+          "type": "datatype.string",
+          "is_required": false,
+          "is_invisible": false
+        },
+        "unique_name": "variable_workflow_024G5MME1ET4O7ipj5ESwWi7r6YBeLsYytW",
+        "object_type": "variable_workflow"
+      }
+    ],
+    "properties": {
+      "atomic": {
+        "is_atomic": false
+      },
+      "delete_workflow_instance": false,
+      "display_name": "Copy(1)-k1- get photo album for user",
+      "runtime_user": {
+        "override_target_runtime_user": false,
+        "specify_on_workflow_start": false,
+        "target_default": true
+      },
+      "target": {
+        "no_target": true
+      }
+    },
+    "object_type": "definition_workflow",
+    "actions": [
+      {
+        "unique_name": "definition_activity_024G5MMFFDYA70aznKeOZ8CJpPvfzSaM7Nb",
+        "name": "HTTP Request",
+        "title": "Get User ID(HTTP Request)",
+        "type": "web-service.http_request",
+        "base_type": "activity",
+        "properties": {
+          "action_timeout": 180,
+          "allow_auto_redirect": true,
+          "allow_headers_redirect": false,
+          "continue_on_error_status_code": false,
+          "continue_on_failure": false,
+          "display_name": "Get User ID(HTTP Request)",
+          "method": "GET",
+          "relative_url": "/users?username=$workflow.definition_workflow_024G5MMDCWPJW73GGQPOw7KZH3H0Xiv16ey.input.variable_workflow_024G5MME1F4MS3hl9Dm9q5XKAxv4DWvkfiz$",
+          "runtime_user": {
+            "target_default": true
+          },
+          "skip_execution": false,
+          "target": {
+            "override_workflow_target": true,
+            "target_id": "definition_target_024AD8889ZL603xKhT8sOb0ryIlRtUp7ldI"
+          }
+        },
+        "object_type": "definition_activity"
+      },
+      {
+        "unique_name": "definition_activity_024G5MMGH38HH3St5FfHmEAvFTfKo1GoEUJ",
+        "name": "JSONPath Query",
+        "title": "Extract User ID(JSONPath Query)",
+        "type": "corejava.jsonpathquery",
+        "base_type": "activity",
+        "properties": {
+          "action_timeout": 180,
+          "continue_on_failure": true,
+          "display_name": "Extract User ID(JSONPath Query)",
+          "input_json": "$activity.definition_activity_024G5MMFFDYA70aznKeOZ8CJpPvfzSaM7Nb.output.response_body$",
+          "jsonpath_queries": [
+            {
+              "jsonpath_query": "$.[0].id",
+              "jsonpath_query_name": "userID",
+              "jsonpath_query_type": "string",
+              "zdate_type_format": "yyyy-MM-dd'T'HH:mm:ssZ"
+            }
+          ],
+          "skip_execution": false
+        },
+        "object_type": "definition_activity"
+      },
+      {
+        "unique_name": "definition_activity_024G5MMHEXOLA49jb2XX4qXjrGxDvVJmT9V",
+        "name": "Condition Block",
+        "title": "Did we get a User ID? (Condition Block)",
+        "type": "logic.if_else",
+        "base_type": "activity",
+        "properties": {
+          "continue_on_failure": false,
+          "display_name": "Did we get a User ID? (Condition Block)",
+          "skip_execution": false
+        },
+        "object_type": "definition_activity",
+        "blocks": [
+          {
+            "unique_name": "definition_activity_024G5MMI4HJ4D0fyaCu9kOTdtJdMhgOjMMt",
+            "name": "Condition Branch",
+            "title": "User found",
+            "type": "logic.condition_block",
+            "base_type": "activity",
+            "properties": {
+              "condition": {
+                "left_operand": "$activity.definition_activity_024G5MMGH38HH3St5FfHmEAvFTfKo1GoEUJ.output.succeeded$",
+                "operator": "eq",
+                "right_operand": true
+              },
+              "continue_on_failure": false,
+              "display_name": "User found",
+              "skip_execution": false
+            },
+            "object_type": "definition_activity",
+            "actions": [
+              {
+                "unique_name": "definition_activity_024G5MMJEORNT2D1jXCKDqSitT6csC6jaFG",
+                "name": "HTTP Request",
+                "title": "Get Photo Albums(HTTP Request)",
+                "type": "web-service.http_request",
+                "base_type": "activity",
+                "properties": {
+                  "action_timeout": 180,
+                  "allow_auto_redirect": true,
+                  "allow_headers_redirect": false,
+                  "continue_on_error_status_code": false,
+                  "continue_on_failure": false,
+                  "display_name": "Get Photo Albums(HTTP Request)",
+                  "method": "GET",
+                  "relative_url": "/users/$activity.definition_activity_024G5MMGH38HH3St5FfHmEAvFTfKo1GoEUJ.output.jsonpath_queries.userID$/albums",
+                  "runtime_user": {
+                    "target_default": true
+                  },
+                  "skip_execution": false,
+                  "target": {
+                    "override_workflow_target": true,
+                    "target_id": "definition_target_024AD8889ZL603xKhT8sOb0ryIlRtUp7ldI"
+                  }
+                },
+                "object_type": "definition_activity"
+              },
+              {
+                "unique_name": "definition_activity_024G5MMKPB3DK4CtphLxPtLA5A7gIr3bJcF",
+                "name": "Set Variables",
+                "title": "Set Output Variables",
+                "type": "core.set_multiple_variables",
+                "base_type": "activity",
+                "properties": {
+                  "continue_on_failure": false,
+                  "display_name": "Set Output Variables",
+                  "skip_execution": false,
+                  "variables_to_update": [
+                    {
+                      "variable_to_update": "$workflow.definition_workflow_024G5MMDCWPJW73GGQPOw7KZH3H0Xiv16ey.output.variable_workflow_024G5MME1ET4O7ipj5ESwWi7r6YBeLsYytW$",
+                      "variable_value_new": "$activity.definition_activity_024G5MMJEORNT2D1jXCKDqSitT6csC6jaFG.output.response_body$"
+                    }
+                  ]
+                },
+                "object_type": "definition_activity"
+              }
+            ]
+          },
+          {
+            "unique_name": "definition_activity_024G5MMLQ0EOC6j56oSAL64DJuVv9pTpIWE",
+            "name": "Condition Branch",
+            "title": "USER Not Found",
+            "type": "logic.condition_block",
+            "base_type": "activity",
+            "properties": {
+              "condition": {
+                "left_operand": "$activity.definition_activity_024G5MMGH38HH3St5FfHmEAvFTfKo1GoEUJ.output.succeeded$",
+                "operator": "eq",
+                "right_operand": false
+              },
+              "continue_on_failure": false,
+              "display_name": "USER Not Found",
+              "skip_execution": false
+            },
+            "object_type": "definition_activity",
+            "actions": [
+              {
+                "unique_name": "definition_activity_024G5MMMSBLQC1cVjcVehJiKRn04uD3IVi7",
+                "name": "Completed",
+                "title": "User not found",
+                "type": "logic.completed",
+                "base_type": "activity",
+                "properties": {
+                  "completion_type": "failed-completed",
+                  "continue_on_failure": false,
+                  "display_name": "User not found",
+                  "result_message": "User not found",
+                  "skip_execution": false
+                },
+                "object_type": "definition_activity"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "categories": [
+      "category_1BMfMXSnJMyt5Ihqi7rWJr5N8cf"
+    ]
+  },
+  "targets": {
+    "definition_target_024AD8889ZL603xKhT8sOb0ryIlRtUp7ldI": {
+      "unique_name": "definition_target_024AD8889ZL603xKhT8sOb0ryIlRtUp7ldI",
+      "name": "k1-jasonplaceholder",
+      "title": "k1-jasonplaceholder",
+      "type": "web-service.endpoint",
+      "base_type": "target",
+      "object_type": "definition_target",
+      "properties": {
+        "description": "jasonplaceholder",
+        "disable_certificate_validation": false,
+        "display_name": "k1-jasonplaceholder",
+        "host": "jsonplaceholder.typicode.com",
+        "ignore_proxy": false,
+        "no_runtime_user": true,
+        "protocol": "https"
+      }
+    }
+  }
+}
